@@ -1,10 +1,22 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const app = express();
+const http = require('http').createServer(app);
+const io = require('socket.io')(http, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
+
 const port = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
+
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, 'build')));
 
 // In-memory store for games
 const games = new Map();
@@ -56,6 +68,7 @@ app.post('/api/games', (req, res) => {
   const gameId = Math.random().toString(36).substr(2, 9);
   const newGame = {
     id: gameId,
+    creator: req.body.creator,
     players: [req.body.creator],
     playerHands: [],
     gamePhase: 'waiting',
@@ -85,21 +98,38 @@ app.post('/api/games/:id/join', (req, res) => {
   }
   if (game.players.length < 4) {
     game.players.push(req.body.playerName);
+    io.to(req.params.id).emit('playerJoined', { players: game.players });
     if (game.players.length === 4) {
-      game.gamePhase = 'bidding';
-      game.currentPlayerIndex = (game.dealer + 1) % 4; // Start bidding with the player to the left of the dealer
-      const deck = shuffleDeck(createDeck());
-      game.playerHands = [
-        deck.slice(0, 13),
-        deck.slice(13, 26),
-        deck.slice(26, 39),
-        deck.slice(39, 52)
-      ];
+      io.to(req.params.id).emit('allPlayersJoined');
     }
     res.json(game);
   } else {
     res.status(400).json({ error: 'Game is full' });
   }
+});
+
+app.post('/api/games/:id/start', (req, res) => {
+  const game = games.get(req.params.id);
+  if (!game) {
+    return res.status(404).json({ error: 'Game not found' });
+  }
+  if (game.players.length !== 4) {
+    return res.status(400).json({ error: 'Not enough players to start the game' });
+  }
+  if (req.body.playerName !== game.creator) {
+    return res.status(403).json({ error: 'Only the game creator can start the game' });
+  }
+  game.gamePhase = 'bidding';
+  game.currentPlayerIndex = (game.dealer + 1) % 4; // Start bidding with the player to the left of the dealer
+  const deck = shuffleDeck(createDeck());
+  game.playerHands = [
+    deck.slice(0, 13),
+    deck.slice(13, 26),
+    deck.slice(26, 39),
+    deck.slice(39, 52)
+  ];
+  io.to(req.params.id).emit('gameStarted', game);
+  res.json(game);
 });
 
 app.get('/api/games/:id', (req, res) => {
@@ -182,6 +212,7 @@ app.post('/api/games/:id/bid', (req, res) => {
     game.doubleStatus = 'undoubled';
   }
 
+  io.to(req.params.id).emit('gameUpdated', game);
   res.json(game);
 });
 
@@ -254,9 +285,29 @@ app.post('/api/games/:id/play', (req, res) => {
   }
   
   console.log('Updated game state:', JSON.stringify(game, null, 2));
+  io.to(req.params.id).emit('gameUpdated', game);
   res.json(game);
 });
 
-app.listen(port, () => {
+// The "catchall" handler: for any request that doesn't
+// match one above, send back React's index.html file.
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
+
+io.on('connection', (socket) => {
+  console.log('New client connected');
+  
+  socket.on('joinGame', (gameId) => {
+    socket.join(gameId);
+    console.log(`Client joined game: ${gameId}`);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('Client disconnected');
+  });
+});
+
+http.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

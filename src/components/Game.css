@@ -1,27 +1,11 @@
-.game-container {
-  width: 100vw;
-  height: 100vh;
-  background-color: #2c5e1a;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.game-table {
-  width: 95%;
-  height: 95%;
-  background-color: #1e3e11;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+/* Game.css */
 
 .player-hand {
   position: absolute;
   display: flex;
   flex-direction: column;
   align-items: center;
+  transition: all 0.3s ease;
 }
 
 .north-hand {
@@ -51,19 +35,21 @@
 .player-info {
   background-color: rgba(0, 0, 0, 0.7);
   color: white;
-  padding: 5px 10px;
-  border-radius: 5px;
-  margin-bottom: 10px;
+  padding: 8px 15px;
+  border-radius: 20px;
+  margin-bottom: 15px;
   text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .player-name {
   font-weight: bold;
-  font-size: 16px;
+  font-size: 18px;
 }
 
 .player-position {
   font-size: 14px;
+  opacity: 0.8;
 }
 
 .cards-container {
@@ -74,7 +60,7 @@
 .dummy-hand {
   display: flex;
   justify-content: center;
-  gap: 10px;
+  gap: 15px;
 }
 
 .dummy-suit {
@@ -84,7 +70,7 @@
 }
 
 .dummy-suit .card {
-  margin: -30px 0;
+  margin: -35px 0;
 }
 
 .dummy-suit .card:first-child {
@@ -96,111 +82,42 @@
 }
 
 .card {
-  width: 60px;
-  height: 90px;
-  margin: 0 -15px;
+  width: 70px;
+  height: 105px;
+  margin: 0 -20px;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .card:hover {
-  transform: translateY(-10px);
+  transform: translateY(-15px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .card.current-turn {
-  box-shadow: 0 0 10px 5px #ffff00;
-}
-
-.bidding-box {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #1e2933;
-  padding: 10px;
-  border-radius: 5px;
-  z-index: 10;
-  color: white;
-  font-family: Arial, sans-serif;
+  box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.7);
 }
 
 .bidding-grid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 2px;
-  margin-bottom: 10px;
-}
-
-.bid-button {
-  background-color: #1e2933;
-  border: 1px solid #3d4b5c;
-  color: white;
-  padding: 5px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.bid-button:hover {
-  background-color: #2c3e50;
-}
-
-.bid-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.bid-button.level {
-  background-color: #3d4b5c;
-  font-weight: bold;
-}
-
-.bid-button.selected {
-  background-color: #2980b9;
-}
-
-.bidding-actions {
-  display: flex;
-  justify-content: space-between;
-}
-
-.action-button {
-  background-color: #3d4b5c;
-  border: none;
-  color: white;
-  padding: 5px 10px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.action-button:hover {
-  background-color: #2c3e50;
-}
-
-.action-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.pass-button {
-  background-color: #c0392b;
-}
-
-.pass-button:hover {
-  background-color: #e74c3c;
+  gap: 5px;
+  margin-bottom: 15px;
 }
 
 .bid-history {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: rgba(30, 41, 51, 0.8);
-  padding: 10px;
-  border-radius: 5px;
+  top: 20px;
+  right: 20px;
+  background-color: rgba(30, 41, 51, 0.9);
+  padding: 15px;
+  border-radius: 10px;
   color: white;
   font-family: Arial, sans-serif;
-  width: 200px;
+  width: 250px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .bid-history-header {
@@ -208,7 +125,7 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 5px;
   font-weight: bold;
-  margin-bottom: 5px;
+  margin-bottom: 10px;
   text-align: center;
 }
 
@@ -216,35 +133,37 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 5px;
-  max-height: 150px;
+  max-height: 200px;
   overflow-y: auto;
   text-align: center;
 }
 
 .bid-history-item {
-  padding: 2px;
-  background-color: #2c3e50;
-  border-radius: 3px;
+  padding: 5px;
+  background-color: rgba(44, 62, 80, 0.7);
+  border-radius: 5px;
+  font-size: 14px;
 }
 
 .game-status {
   position: absolute;
-  top: 10px;
-  left: 10px;
-  background-color: rgba(30, 41, 51, 0.8);
-  padding: 10px;
-  border-radius: 5px;
+  top: 20px;
+  left: 20px;
+  background-color: rgba(30, 41, 51, 0.9);
+  padding: 15px;
+  border-radius: 10px;
   color: white;
   font-family: Arial, sans-serif;
-  width: 250px;
+  width: 280px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .tricks-won {
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 .tricks-needed {
-  margin-top: 10px;
+  margin-top: 15px;
 }
 
 .current-trick {
@@ -252,14 +171,14 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 300px;
-  height: 300px;
+  width: 350px;
+  height: 350px;
 }
 
 .trick-card {
   position: absolute;
-  width: 60px;
-  height: 90px;
+  width: 70px;
+  height: 105px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -268,15 +187,17 @@
 .trick-card img {
   width: 100%;
   height: auto;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
 .trick-card .player-name {
   background-color: rgba(0, 0, 0, 0.7);
   color: white;
-  padding: 2px 5px;
-  border-radius: 3px;
+  padding: 3px 8px;
+  border-radius: 10px;
   font-size: 12px;
-  margin-top: 5px;
+  margin-top: 8px;
 }
 
 .south-trick {
@@ -309,4 +230,23 @@
 
 .north-hand .card, .east-hand .card, .west-hand .card {
   opacity: 0.7;
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
 }
